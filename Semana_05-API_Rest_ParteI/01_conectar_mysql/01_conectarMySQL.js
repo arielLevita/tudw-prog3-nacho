@@ -1,8 +1,5 @@
-//Uso dotenv para levantar el archivo de configuración .env
-import dotenv from 'dotenv'
 //Uso mysql2 para conectarme a MySQL
 import mysql from 'mysql2';
-dotenv.config();
 
 // Creo la conexión
 const conexion = mysql.createConnection({

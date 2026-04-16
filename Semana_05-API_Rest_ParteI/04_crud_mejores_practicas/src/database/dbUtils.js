@@ -1,5 +1,3 @@
-import dotenv from "dotenv";
-dotenv.config();
 //Uso mysql2/promise para conectarme a MySQL usando promises
 import mysql from "mysql2/promise";
 

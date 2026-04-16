@@ -4,14 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node 03_conectarMySQL.js",
+    "start": "node --env-file=.env 03_conectarMySQL.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "mysql2": "^3.6.0"
   },
