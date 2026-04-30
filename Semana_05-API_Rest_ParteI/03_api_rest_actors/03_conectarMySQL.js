@@ -1,5 +1,6 @@
 //Uso dotenv para levantar el archivo de configuración .env
 import express from "express";
+
 //Aislo en otro archivo la conexión a la base de datos
 import { findAll, findById } from './actors.js';
 

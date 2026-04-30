@@ -4,8 +4,8 @@
   "description": "",
   "main": "src/04_crud_mejores_practicas.js",
   "scripts": {
-    "start": "node --env-file=.env src/04_crud_mejores_practicas.js --watch",
-    "dev": "node --env-file=.env src/04_crud_mejores_practicas.js --watch",
+    "start": "node --env-file=.env --watch src/04_crud_mejores_practicas.js",
+    "dev": "node --env-file=.env --watch src/04_crud_mejores_practicas.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -15,6 +15,7 @@
     "apicache": "^1.6.3",
     "cors": "^2.8.5",
     "express": "^4.20.0",
+    "express-validator": "^7.3.2",
     "helmet": "^7.1.0",
     "mysql2": "^3.6.1",
     "swagger-jsdoc": "^6.2.8",

@@ -4,8 +4,8 @@ import helmet from "helmet";
 import swaggerUi from "swagger-ui-express";
 import swaggerJsdoc from "swagger-jsdoc";
 import validateContentType from "./middlewares/validateContentType.js";
-import { router as v1Router } from "./v1/routes/actorsRoutes.js";
-import { router as v2Router } from "./v2/routes/actorsRoutes.js";
+import { router as v1Router } from "./v1/routes/actors.routes.js";
+import { router as v2Router } from "./v2/routes/actors.routes.js";
 
 const app = express();
 

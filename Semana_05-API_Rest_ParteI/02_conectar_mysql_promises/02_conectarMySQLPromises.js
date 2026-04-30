@@ -12,10 +12,10 @@ async function getAllActors() {
     });
 
     // Defino el string de consulta
-    const sqlQuery = 'SELECT * FROM actor';
+    const sqlQuery = "SELECT * FROM actor WHERE first_name LIKE ?;";
 
     // Ejecuto la consulta
-    const [rows] = await conexion.query(sqlQuery);
+    const [rows] = await conexion.query(sqlQuery, '%PENELOPE%');
 
     console.log('Query results:', rows);
 

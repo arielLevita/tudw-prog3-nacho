@@ -2,7 +2,7 @@ import BdUtils from "./dbUtils.js";
 
 export default class Actors {
 
-    findAll = async (filters = null, limit = 0, offset = 0, order = "actor_id", asc = "ASC") => {
+    findAll = async (filters = null, limit = 0, offset = 0, order = {"actor_id": "ASC"}) => {
 
         // Defino el string de consulta
         let strSql = `SELECT actor_id, first_name, last_name, last_update FROM actor `
@@ -12,11 +12,9 @@ export default class Actors {
         if (filters) {
             strSql += "WHERE ";
 
-            for (const filter of filters) {
-                for (const clave of Object.keys(filter)) {
-                    strSql += `${clave} = ? AND `;
-                    filterValuesArray.push(filter[clave]);
-                }    
+            for (const clave of Object.keys(filters)) {
+                strSql += `${clave} = ? AND `;
+                filterValuesArray.push(filters[clave]);
             }
 
             //Quito el último AND
@@ -24,7 +22,10 @@ export default class Actors {
         }
 
         if (order) {
-            strSql += ` ORDER BY ${order} ${asc}`;
+            for (const clave of Object.keys(order)) {
+                const direction = order[clave];
+                strSql += `ORDER BY ${clave} ${direction} `;
+            }
         }
 
         if (limit) {
@@ -53,7 +54,7 @@ export default class Actors {
 
         conexion.end();
 
-        return (rows.length > 0)? rows[0] : null;
+        return (rows.length > 0) ? rows[0] : null;
     };
 
     create = async ({ firstName, lastName, lastUpdate }) => {

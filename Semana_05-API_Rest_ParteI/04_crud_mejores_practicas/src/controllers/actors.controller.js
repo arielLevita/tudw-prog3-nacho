@@ -1,42 +1,25 @@
-import ActorsServices from "../services/actorsServices.js";
+import ActorResponseDTO from "../dtos/actor.response.dto.js";
+import ActorsService from "../services/actors.service.js";
 
 export default class ActorsController {
 
     constructor() {
-        this.service = new ActorsServices();
+        this.service = new ActorsService();
     }
 
     findAll = async (req, res) => {
 
-        //Filtros
-        const firstName = req.query.firstName;
-        const lastName = req.query.lastName;
-
-        //Paginación
-        const limit = req.query.limit;
-        const offset = req.query.offset;
-        const order = req.query.order;
-        const asc = req.query.asc;
+        const { filter, limit, offset, order } = req.query;
 
         try {
 
-            //Si no están definidos limit y offset no hago paginación
-            const pLimit = limit ? Number(limit) : 0;
-            const pOffset = offset ? Number(offset) : 0;
-            const pOrder = order || "actorId";
-            const pAsc = asc === "false" ? false : true;
-
-            const filter = {};
-
-            if (firstName) filter.firstName = firstName;
-            if (lastName) filter.lastName = lastName;
-
-            const data = await this.service.findAll(filter, pLimit, pOffset, pOrder, pAsc);
+            const data = await this.service.findAll(filter, limit, offset, order);
 
             res.send(data);
 
-        } catch (exc) {
-            throw exc;
+        } catch (error) {
+            console.error(error);
+            res.status(error?.status || 500).send({ status: "Fallo", data: { error: error?.message || error } });
         }
     }
 

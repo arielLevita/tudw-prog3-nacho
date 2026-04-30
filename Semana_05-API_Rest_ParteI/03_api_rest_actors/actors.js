@@ -1,8 +1,5 @@
-//Uso dotenv para levantar el archivo de configuración .env
-import dotenv from 'dotenv';
 //Uso mysql2/promise para conectarme a MySQL usando promises
 import mysql from "mysql2/promise";
-dotenv.config();
 
 const findAll = async () => {
     try {
