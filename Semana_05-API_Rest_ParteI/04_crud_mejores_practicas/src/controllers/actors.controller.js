@@ -24,12 +24,7 @@ export default class ActorsController {
     }
 
     findById = async (req, res) => {
-        const actorId = Number(req.params.actorId);
-
-        if (!Number.isInteger(actorId)) {
-            return res.status(400).json({ error: 'El parámetro debe ser un número entero' });
-        }
-
+        const actorId = req.params.actorId;
         const data = await this.service.findById(actorId);
 
         if (!data) {
@@ -40,23 +35,8 @@ export default class ActorsController {
     }
 
     create = async (req, res) => {
-        const { body } = req;
 
-        if (!body.firstName || !body.lastName) {
-            res
-                .status(404)
-                .send({
-                    status: "Fallo",
-                    data: {
-                        error: "Uno de los siguientes datos falta o es vacío: 'firstName', 'lastName'."
-                    }
-                });
-        }
-
-        const actor = {
-            firstName: body.firstName,
-            lastName: body.lastName
-        };
+        const actor = req.dto;
 
         try {
             const actorCreado = await this.service.create(actor);
@@ -69,20 +49,10 @@ export default class ActorsController {
     }
 
     update = async (req, res) => {
-        const body = req.body;
-        const actorId = req.params.actorId
-
-        if (!actorId) {
-            res
-                .status(404)
-                .send({
-                    status: "Fallo",
-                    data: {
-                        error: "El parámetro actorId no puede ser vacío."
-                    }
-                });
-        }
-
+        
+        const actorId = req.params.actorId;
+        const body = req.dto;
+        
         try {
             const actorActualizado = await this.service.update(actorId, body);
             res.status(200).send(actorActualizado);
@@ -94,10 +64,6 @@ export default class ActorsController {
     destroy = async (req, res) => {
 
         const actorId = req.params.actorId;
-
-        if (!actorId) {
-            res.status(404).send({ status: "Fallo", data: { error: "El parámetro actorId no puede ser vacío." } })
-        }
 
         try {
             await this.service.destroy(actorId);

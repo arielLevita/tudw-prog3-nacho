@@ -68,7 +68,7 @@ export default class Actors {
 
         conexion.end();
 
-        return this.findById(rows[0].actorId);
+        return rows[0].actorId;
     };
 
     update = async (actorId, { firstName, lastName, lastUpdate }) => {
@@ -80,7 +80,7 @@ export default class Actors {
 
         conexion.end();
 
-        return this.findById(actorId);
+        return actorId;
     };
 
     destroy = async (actorId) => {

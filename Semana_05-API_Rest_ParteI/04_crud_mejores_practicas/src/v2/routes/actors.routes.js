@@ -5,6 +5,8 @@ import ActorsController from "../../controllers/actors.controller.js";
 
 const cache = apicache.middleware;
 
+//Valida que el actorId sea un entero positivo y que esté presente en la ruta. 
+// Si no es así, devuelve un error 400 con los detalles de la validación fallida.
 const validateId = [
     param('actorId')
         .notEmpty().withMessage('actorId es requerido')
@@ -19,6 +21,9 @@ const validateId = [
         next();
     }
 ];
+
+// Verifica que los query params limit y offset, si están presentes, sean enteros no negativos.
+// Además, valida que el parámetro order, si se proporciona, sea uno de los valores permitidos (firstName, lastName o actorId) y que el parámetro asc, si se incluye, sea un valor booleano. Si alguna de estas validaciones falla, devuelve un error 400 con los detalles de la validación fallida.
 
 const validateQueryParams = [
     query('limit')
@@ -45,6 +50,11 @@ const validateQueryParams = [
     }
 ];
 
+
+// Verifica que el cuerpo del mensaje tenga los campos requeridos de actor. 
+// En este caso, se valida que el campo firstName no esté vacío y tenga al menos 3 caracteres, 
+// y que el campo lastName también cumpla con estas mismas condiciones. 
+// Si alguna de estas validaciones falla, devuelve un error 400 con los detalles de la validación fallida.
 const validatePayload = [
     body("firstName")
         .notEmpty().withMessage("El nombre es obligatorio")
@@ -63,6 +73,8 @@ const validatePayload = [
     }
 ];
 
+// Esta función middleware se encarga de transformar en valores válidos 
+// los parámetros de consulta (query params) para la ruta que obtiene todos los actores/actrices.
 const findAllTransformarQueryParams = (req, res, next) => {
     //Si no están definidos limit y offset no hago paginación
     req.query.limit = req.query.limit ? Number(req.query.limit) : 0;
@@ -83,6 +95,20 @@ const findAllTransformarQueryParams = (req, res, next) => {
 
     next();
 };
+
+
+//Transforma el request body en un DTO (Data Transfer Object) para estandarizar los datos antes de que lleguen al controlador. 
+// En este caso, toma los campos firstName y lastName del cuerpo de la solicitud, los convierte a mayúsculas y elimina los espacios en blanco 
+// al principio y al final. Luego, asigna este objeto transformado a req.dto para que esté disponible en el controlador.
+const transformDTO = (req, res, next) => {
+    const { firstName, lastName } = req.body;
+    req.dto = {
+        firstName: firstName.trim().toUpperCase(),
+        lastName: lastName.trim().toUpperCase(),
+        lastUpdate: new Date().toISOString().replace('T', ' ').replace('Z', '')
+    };
+    next();
+}
 
 const actorsController = new ActorsController();
 const router = express.Router();
@@ -198,9 +224,9 @@ router.get("/actors", [validateQueryParams, findAllTransformarQueryParams, cache
 
 router.get("/actors/:actorId", validateId, actorsController.findById);
 
-router.post("/actors", validatePayload, actorsController.create);
+router.post("/actors", [validatePayload, transformDTO], actorsController.create);
 
-router.put("/actors/:actorId", [validateId, validatePayload], actorsController.update);
+router.put("/actors/:actorId", [validateId, validatePayload, transformDTO], actorsController.update);
 
 router.delete("/actors/:actorId", validateId, actorsController.destroy);
 

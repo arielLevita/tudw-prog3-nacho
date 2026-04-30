@@ -54,23 +54,17 @@ export default class ActorsService {
   }
 
   create = async (actor) => {
-    const actorToInsert = {
-      ...actor,
-      lastUpdate: new Date().toISOString().replace('T', ' ').replace('Z', '')
-    }
-    return this.actors.create(actorToInsert);
+    const actorId = await this.actors.create(actor);
+    return await this.findById(actorId);
   }
 
   update = async (actorId, actor) => {
-    const actorToUpdate = {
-      ...actor,
-      lastUpdate: new Date().toISOString().replace('T', ' ').replace('Z', '')
-    }
-    return this.actors.update(actorId, actorToUpdate);
+    await this.actors.update(actorId, actor);
+    return await this.findById(actorId);
   }
 
   destroy = async (actorId) => {
-    this.actors.destroy(actorId);
+    await this.actors.destroy(actorId);
   }
 
 };

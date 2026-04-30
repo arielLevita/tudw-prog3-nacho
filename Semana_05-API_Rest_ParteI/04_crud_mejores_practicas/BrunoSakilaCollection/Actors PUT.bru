@@ -1,0 +1,18 @@
+meta {
+  name: Actors PUT
+  type: http
+  seq: 4
+}
+
+put {
+  url: http://localhost:3000/api/actors/204
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "firstName": "NACHO", 
+    "lastName": "Novello"
+  }
+}
