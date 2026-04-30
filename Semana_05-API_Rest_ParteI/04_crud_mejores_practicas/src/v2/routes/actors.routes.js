@@ -62,7 +62,7 @@ const validatePayload = [
 
     body("lastName")
         .notEmpty().withMessage("El apellido es obligatorio")
-        .isLength({ min: 3 }).withMessage("El apellido debe tener al menos 3 caracteres")   ,
+        .isLength({ min: 3 }).withMessage("El apellido debe tener al menos 3 caracteres"),
 
     (req, res, next) => {
         const errors = validationResult(req);
@@ -136,12 +136,19 @@ const router = express.Router();
  *           type: string
  *           format: date-time
  *           description: última modificación del actor/actriz. 
- * 
  *       example:
  *         actorId: 1
  *         firstName: PENELOPE
  *         lastName: GUINESS
  *         lastUpdate: 2024-09-12 18:05:18
+ * 
+ *     Error:
+ *       type: object
+ *       properties:    
+ *         error:
+ *           type: string
+ *       example:
+ *         error: "Actor no encontrado"
  */
 
 /**
@@ -224,10 +231,98 @@ router.get("/actors", [validateQueryParams, findAllTransformarQueryParams, cache
 
 router.get("/actors/:actorId", validateId, actorsController.findById);
 
+/** 
+ * @swagger
+ * /api/actors:
+ *   post: 
+ *     summary: Crea un nuevo actor / actriz.
+ *     tags: [Actors]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Actor'
+ *     responses:
+ *       201:
+ *         description: Actor/actriz creado/a exitosamente.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Actor'
+ *       400:
+ *         description: Solicitud inválida.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 router.post("/actors", [validatePayload, transformDTO], actorsController.create);
 
+/**
+ * @swagger
+ * /api/actors/{actorId}:
+ *   put:
+ *     summary: Actualiza un actor/actriz existente.
+ *     tags: [Actors]
+ *     parameters:
+ *       - name: actorId
+ *         in: path
+ *         required: true
+ *         description: El ID del actor/actriz que se desea modificar.
+ *         schema:
+ *           type: integer
+ *           example: 1
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Actor'
+ *     responses:
+ *       200:
+ *         description: Actor/actriz actualizado/a exitosamente.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Actor'
+ *       400:
+ *         description: Solicitud inválida.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 router.put("/actors/:actorId", [validateId, validatePayload, transformDTO], actorsController.update);
 
+/**
+ * @swagger
+ * /api/actors/{actorId}:
+ *   delete:
+ *     summary: Elimina un actor/actriz existente.
+ *     tags: [Actors]
+ *     parameters:
+ *       - name: actorId
+ *         in: path
+ *         required: true
+ *         description: El ID del actor/actriz que se desea eliminar.
+ *         schema:
+ *           type: integer
+ *           example: 1
+ *     responses:
+ *       200:
+ *         description: Actor/actriz eliminado/a exitosamente.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Actor'
+ *       400:
+ *         description: Solicitud inválida.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 router.delete("/actors/:actorId", validateId, actorsController.destroy);
 
 export { router };
