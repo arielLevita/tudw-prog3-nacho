@@ -26,6 +26,12 @@ const validateId = [
 // Además, valida que el parámetro order, si se proporciona, sea uno de los valores permitidos (firstName, lastName o actorId) y que el parámetro asc, si se incluye, sea un valor booleano. Si alguna de estas validaciones falla, devuelve un error 400 con los detalles de la validación fallida.
 
 const validateQueryParams = [
+    query('firstName')
+        .optional()
+        .isString().withMessage('firstName debe ser una cadena de texto'),
+    query('lastName')
+        .optional()
+        .isString().withMessage('lastName debe ser una cadena de texto'),
     query('limit')
         .optional()
         .isInt({ min: 0 }).withMessage('limit debe ser un entero no negativo')
