@@ -114,9 +114,9 @@ const transformDTO = (req, res, next) => {
     next();
 }
 
-const actorsController = new ActorsController();
+const controller = new ActorsController();
 const router = express.Router();
 
-router.get("/actors", [validateQueryParams, findAllTransformarQueryParams], actorsController.findAll);
+router.get("/actors", [validateQueryParams, findAllTransformarQueryParams], controller.findAll.bind(controller));
 
 export { router };
