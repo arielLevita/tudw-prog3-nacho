@@ -116,7 +116,7 @@ const transformDTO = (req, res, next) => {
     next();
 }
 
-const actorsController = new ActorsController();
+const controller = new ActorsController();
 const router = express.Router();
 
 /**
@@ -185,7 +185,7 @@ const router = express.Router();
  *                     lastName: CAGE
  *                     lastUpdate: 2023-10-12 18:36:36
  */
-router.get("/actors", [validateQueryParams, findAllTransformarQueryParams, cache("5 minutes")], actorsController.findAll);
+router.get("/actors", [validateQueryParams, findAllTransformarQueryParams, cache("5 minutes")], controller.findAll.bind(controller));
 
 /**
  * @swagger
@@ -235,7 +235,7 @@ router.get("/actors", [validateQueryParams, findAllTransformarQueryParams, cache
  *                   example: "Actor no encontrado"
  */
 
-router.get("/actors/:actorId", validateId, actorsController.findById);
+router.get("/actors/:actorId", validateId, controller.findById.bind(controller));
 
 /** 
  * @swagger
@@ -263,7 +263,7 @@ router.get("/actors/:actorId", validateId, actorsController.findById);
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.post("/actors", [validatePayload, transformDTO], actorsController.create);
+router.post("/actors", [validatePayload, transformDTO], controller.create.bind(controller));
 
 /**
  * @swagger
@@ -299,7 +299,7 @@ router.post("/actors", [validatePayload, transformDTO], actorsController.create)
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.put("/actors/:actorId", [validateId, validatePayload, transformDTO], actorsController.update);
+router.put("/actors/:actorId", [validateId, validatePayload, transformDTO], controller.update.bind(controller));
 
 /**
  * @swagger
@@ -329,6 +329,6 @@ router.put("/actors/:actorId", [validateId, validatePayload, transformDTO], acto
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.delete("/actors/:actorId", validateId, actorsController.destroy);
+router.delete("/actors/:actorId", validateId, controller.destroy.bind(controller));
 
 export { router };
