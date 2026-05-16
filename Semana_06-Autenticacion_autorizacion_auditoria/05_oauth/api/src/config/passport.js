@@ -1,7 +1,4 @@
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
-import dotenv from "dotenv";
-
-dotenv.config();
 
 //Defino como se validan los usuarios
 const estrategia = new GoogleStrategy(

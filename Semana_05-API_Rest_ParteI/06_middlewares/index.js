@@ -6,6 +6,7 @@ const middlewareControlNombre1 = (req, res, next) => {
   if (!nombre) {
     res.status(400).json({ error: 'Falta el parámetro nombre' });
   } else {
+    req.nombreProcesado = req.query.nombre.trim();
     next();
   }
 };

@@ -1,6 +1,5 @@
 import express from 'express';
 import passport from 'passport';
-import dotenv from 'dotenv';
 import cors from 'cors';
 import jwt from 'jsonwebtoken';
 import { estrategia } from "./config/passport.js";
@@ -8,7 +7,6 @@ import v1ActorsRouter from "./v1/routes/actorsRoutes.js";
 import v1FilmsRouter from "./v1/routes/filmsRoutes.js";
 import jwtAuthMiddleware from './middlewares/jwtAuthMiddleware.js';
 
-dotenv.config();
 const app = express();
 
 app.use(

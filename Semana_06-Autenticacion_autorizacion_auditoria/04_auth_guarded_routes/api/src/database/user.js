@@ -1,4 +1,3 @@
-//Uso dotenv para levantar el archivo de configuración .env
 import conexion from "./conexion.js";
 
 class User {

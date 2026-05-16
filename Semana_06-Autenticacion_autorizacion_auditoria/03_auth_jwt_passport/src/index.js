@@ -3,7 +3,7 @@ import cors from "cors";
 import passport from "passport";
 import morgan from 'morgan';
 
-import { estrategia, validacion } from "./config/passport.js";
+import { localStrategy, jwtStrategy } from "./config/passport.js";
 
 import v1AuthRouter from "./v1/routes/authRoutes.js";
 import v1ActorsRouter from "./v1/routes/actorsRoutes.js";
@@ -15,8 +15,8 @@ app.use(morgan('combined'));
 app.use(express.json());
 app.use(cors());
 
-passport.use(estrategia);
-passport.use(validacion);
+passport.use(localStrategy);
+passport.use(jwtStrategy);
 app.use(passport.initialize());
 
 app.use("/api/v1", v1AuthRouter);

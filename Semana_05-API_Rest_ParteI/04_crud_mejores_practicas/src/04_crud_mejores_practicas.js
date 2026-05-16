@@ -17,7 +17,7 @@ app.use(helmet());
 
 // CORS opción dominios permitidos
 const corsOptions = {
-    origin: 'http://localhost:3001', // Dominio permitido
+    origin: ['http://localhost:3001', 'http://localhost:5173'], // Dominios permitidos
     optionsSuccessStatus: 200, 
 };
 
@@ -45,7 +45,7 @@ const swaggerDocs = swaggerJsdoc(swaggerOptions);
 
 app.use("/api/", v2Router);
 app.use("/api/v1", v1Router);
-app.use("/api/v2", v2Router);
+
 
 // swagger-ui-express sirve la interfaz Swagger
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));

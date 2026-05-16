@@ -1,7 +1,4 @@
-//Uso dotenv para levantar el archivo de configuración .env
-import dotenv from 'dotenv'
 import conexion from './conexion.js'
-dotenv.config();
 
 class Actor {
 

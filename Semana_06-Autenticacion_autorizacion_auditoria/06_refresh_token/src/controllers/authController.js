@@ -1,7 +1,5 @@
 import jwt from 'jsonwebtoken';
 import passport from "passport";
-import dotenv from 'dotenv'
-dotenv.config();
 import UsersService from '../services/usersService.js';
 
 class AuthController {

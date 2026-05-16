@@ -1,12 +1,9 @@
 import { ExtractJwt, Strategy as JwtStrategy } from 'passport-jwt';
 import { Strategy as LocalStrategy } from 'passport-local';
 import UsersService from "./../services/usersService.js";
-import dotenv from "dotenv";
-
-dotenv.config();
 
 //Defino como se validan los usuarios
-const estrategia = new LocalStrategy({
+const localStrategy = new LocalStrategy({
     usernameField: 'username',
     passwordField: 'password'
 },
@@ -26,7 +23,7 @@ const estrategia = new LocalStrategy({
 );
 
 //Defino como se validan los tokens
-const validacion = new JwtStrategy({
+const jwtStrategy = new JwtStrategy({
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
     secretOrKey: process.env.JWT_SECRET
 },
@@ -41,4 +38,4 @@ const validacion = new JwtStrategy({
     }
 );
 
-export { estrategia, validacion };
+export { localStrategy, jwtStrategy };

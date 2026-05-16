@@ -1,4 +1,3 @@
-import dotenv from "dotenv";
 //Paquetes para hacer applicación express con handlebars
 import express from "express";
 import expressHandlebars from 'express-handlebars';
@@ -18,7 +17,6 @@ import dashboardRouter from './v1/routes/dashboardRoutes.js';
 
 import UsersService from "./services/usersService.js";
 
-dotenv.config();
 const service = new UsersService();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
