@@ -16,6 +16,10 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
+app.get("/api/v1/status", (_, res) => {
+    res.json({ status: "ok" });
+});
+
 app.use("/api/v1", v1RouterActors);
 
 app.listen(process.env.PORT, () => console.log(`Servidor iniciado en el puerto ${process.env.PORT}`))

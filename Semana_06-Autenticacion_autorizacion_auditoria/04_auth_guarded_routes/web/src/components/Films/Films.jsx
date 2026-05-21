@@ -1,6 +1,7 @@
 import { useContext, useState, useEffect } from 'react';
 import { UserContext } from '../UserContext/UserContext';
 import Header from '../Header/Header';
+import { Link } from 'react-router-dom';
 
 const Films = () => {
 
@@ -22,18 +23,27 @@ const Films = () => {
     return (
         <>
             <Header />
-            {(films?.length > 0) &&
-                <table>
-                    <thead><tr><th>Id</th><th>Title</th></tr></thead>
-                    <tbody>
-                        {films.map((value, index) => {
-                            return <tr key={index}>
-                                <td>{value.filmId}</td>
-                                <td>{value.title}</td>
-                            </tr>
-                        })}
-                    </tbody>
-                </table>} </>);
+            <main>
+                <ul>
+                    <li><Link to="/restricted/dashboard">Dashboard</Link></li>
+                </ul>
+                {(films?.length > 0) &&
+                    <table>
+                        <thead><tr><th>Id</th><th>Title</th></tr></thead>
+                        <tbody>
+                            {films.map((value, index) => {
+                                return <tr key={index}>
+                                    <td>{value.filmId}</td>
+                                    <td>{value.title}</td>
+                                </tr>
+                            })}
+                        </tbody>
+                    </table>}
+                <ul>
+                    <li><Link to="/restricted/dashboard">Dashboard</Link></li>
+                </ul>
+            </main>
+        </>);
 };
 
 export { Films };
