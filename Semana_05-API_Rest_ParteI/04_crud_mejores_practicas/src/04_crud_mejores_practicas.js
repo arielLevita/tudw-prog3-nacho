@@ -4,8 +4,8 @@ import helmet from "helmet";
 import swaggerUi from "swagger-ui-express";
 import swaggerJsdoc from "swagger-jsdoc";
 import validateContentType from "./middlewares/validateContentType.js";
-import { router as v1Router } from "./v1/routes/actors.routes.js";
-import { router as v2Router } from "./v2/routes/actors.routes.js";
+import { router as v1Router } from "./routes/v1/actors.routes.js";
+import { router as v2Router } from "./routes/v2/actors.routes.js";
 
 const app = express();
 
@@ -38,7 +38,7 @@ const swaggerOptions = {
             },
         ],
     },
-    apis: ['./src/v2/routes/*.js'], 
+    apis: ['./src/routes/v2/*.js'], 
 };
 
 const swaggerDocs = swaggerJsdoc(swaggerOptions);
@@ -51,4 +51,4 @@ app.use("/api/v1", v1Router);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 
-app.listen(process.env.PORT, () => console.log(`Servidor iniciado en el puerto ${process.env.PORT}`))
+app.listen(process.env.PORT, () => console.log(`Servidor iniciado. Ingresar a http://localhost:${process.env.PORT}/api/`))

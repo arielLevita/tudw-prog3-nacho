@@ -2,119 +2,13 @@ import express from "express";
 import { query, param, body, validationResult } from "express-validator";
 import apicache from "apicache";
 import ActorsController from "../../controllers/actors.controller.js";
+import actorIdValidator from "../../validators/actorId.validator.js";
+import actorsFindAllValidator from "../../validators/actorsFindAll.validator.js";
+import actorsCreateValidator from "../../validators/actorsCreate.validator.js";
+import actorsFindAllTransformer from "../../transformers/actorsFindAll.transformer.js";
+import actorsCreateTransformer from "../../transformers/actorsCreate.transformer.js"
 
 const cache = apicache.middleware;
-
-//Valida que el actorId sea un entero positivo y que esté presente en la ruta. 
-// Si no es así, devuelve un error 400 con los detalles de la validación fallida.
-const validateId = [
-    param('actorId')
-        .notEmpty().withMessage('actorId es requerido')
-        .isInt({ min: 1 }).withMessage('actorId debe ser un entero positivo')
-        .toInt(),
-
-    (req, res, next) => {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(400).json({ errors: errors.array() });
-        }
-        next();
-    }
-];
-
-// Verifica que los query params limit y offset, si están presentes, sean enteros no negativos.
-// Además, valida que el parámetro order, si se proporciona, sea uno de los valores permitidos (firstName, lastName o actorId) y que el parámetro asc, si se incluye, sea un valor booleano. Si alguna de estas validaciones falla, devuelve un error 400 con los detalles de la validación fallida.
-
-const validateQueryParams = [
-    query('firstName')
-        .optional()
-        .isString().withMessage('firstName debe ser una cadena de texto'),
-    query('lastName')
-        .optional()
-        .isString().withMessage('lastName debe ser una cadena de texto'),
-    query('limit')
-        .optional()
-        .isInt({ min: 0 }).withMessage('limit debe ser un entero no negativo')
-        .toInt(),
-    query('offset')
-        .optional()
-        .isInt({ min: 0 }).withMessage('offset debe ser un entero no negativo')
-        .toInt(),
-    query('order')
-        .optional()
-        .isIn(['firstName', 'lastName', 'actorId']).withMessage('order debe ser uno de los siguientes valores: firstName, lastName, actorId'),
-    query('asc')
-        .optional()
-        .isBoolean().withMessage('asc debe ser un valor booleano'),
-
-    (req, res, next) => {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(400).json({ errors: errors.array() });
-        }
-        next();
-    }
-];
-
-
-// Verifica que el cuerpo del mensaje tenga los campos requeridos de actor. 
-// En este caso, se valida que el campo firstName no esté vacío y tenga al menos 3 caracteres, 
-// y que el campo lastName también cumpla con estas mismas condiciones. 
-// Si alguna de estas validaciones falla, devuelve un error 400 con los detalles de la validación fallida.
-const validatePayload = [
-    body("firstName")
-        .notEmpty().withMessage("El nombre es obligatorio")
-        .isLength({ min: 3 }).withMessage("El nombre debe tener al menos 3 caracteres"),
-
-    body("lastName")
-        .notEmpty().withMessage("El apellido es obligatorio")
-        .isLength({ min: 3 }).withMessage("El apellido debe tener al menos 3 caracteres"),
-
-    (req, res, next) => {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(400).json({ errors: errors.array() });
-        }
-        next();
-    }
-];
-
-// Esta función middleware se encarga de transformar en valores válidos 
-// los parámetros de consulta (query params) para la ruta que obtiene todos los actores/actrices.
-const findAllTransformarQueryParams = (req, res, next) => {
-    //Si no están definidos limit y offset no hago paginación
-    req.query.limit = req.query.limit ? Number(req.query.limit) : 0;
-    req.query.offset = req.query.offset ? Number(req.query.offset) : 0;
-
-    //Obtengo los filtros para cada campo. Si no están definidos no los incluyo en el objeto filter.
-    const filterObj = {};
-    const orderObj = {};
-
-    const { firstName, lastName, order } = req.query;
-
-    if (firstName) filterObj.firstName = firstName;
-    if (lastName) filterObj.lastName = lastName;
-    if (order) orderObj[order] = req.query.asc === "true" ? "ASC" : "DESC";
-
-    req.query.filter = filterObj;
-    req.query.order = orderObj;
-
-    next();
-};
-
-
-//Transforma el request body en un DTO (Data Transfer Object) para estandarizar los datos antes de que lleguen al controlador. 
-// En este caso, toma los campos firstName y lastName del cuerpo de la solicitud, los convierte a mayúsculas y elimina los espacios en blanco 
-// al principio y al final. Luego, asigna este objeto transformado a req.dto para que esté disponible en el controlador.
-const transformDTO = (req, res, next) => {
-    const { firstName, lastName } = req.body;
-    req.dto = {
-        firstName: firstName.trim().toUpperCase(),
-        lastName: lastName.trim().toUpperCase(),
-        lastUpdate: new Date().toISOString().replace('T', ' ').replace('Z', '')
-    };
-    next();
-}
 
 const controller = new ActorsController();
 const router = express.Router();
@@ -157,6 +51,10 @@ const router = express.Router();
  *         error: "Actor no encontrado"
  */
 
+router.get("/", (req, res) => {
+    res.send({ status: "OK" });
+})
+
 /**
  * @swagger
  * /api/actors:
@@ -185,7 +83,7 @@ const router = express.Router();
  *                     lastName: CAGE
  *                     lastUpdate: 2023-10-12 18:36:36
  */
-router.get("/actors", [validateQueryParams, findAllTransformarQueryParams, cache("5 minutes")], controller.findAll.bind(controller));
+router.get("/actors", [actorsFindAllValidator, actorsFindAllTransformer, cache("5 minutes")], controller.findAll.bind(controller));
 
 /**
  * @swagger
@@ -234,8 +132,7 @@ router.get("/actors", [validateQueryParams, findAllTransformarQueryParams, cache
  *                   type: string
  *                   example: "Actor no encontrado"
  */
-
-router.get("/actors/:actorId", validateId, controller.findById.bind(controller));
+router.get("/actors/:actorId", actorIdValidator, controller.findById.bind(controller));
 
 /** 
  * @swagger
@@ -263,7 +160,7 @@ router.get("/actors/:actorId", validateId, controller.findById.bind(controller))
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.post("/actors", [validatePayload, transformDTO], controller.create.bind(controller));
+router.post("/actors", [actorsCreateValidator, actorsCreateTransformer], controller.create.bind(controller));
 
 /**
  * @swagger
@@ -299,7 +196,7 @@ router.post("/actors", [validatePayload, transformDTO], controller.create.bind(c
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.put("/actors/:actorId", [validateId, validatePayload, transformDTO], controller.update.bind(controller));
+router.put("/actors/:actorId", [actorIdValidator, actorsCreateValidator, actorsCreateTransformer], controller.update.bind(controller));
 
 /**
  * @swagger
@@ -329,6 +226,6 @@ router.put("/actors/:actorId", [validateId, validatePayload, transformDTO], cont
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.delete("/actors/:actorId", validateId, controller.destroy.bind(controller));
+router.delete("/actors/:actorId", actorIdValidator, controller.destroy.bind(controller));
 
 export { router };
