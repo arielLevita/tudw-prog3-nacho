@@ -13,14 +13,9 @@ class AuthController {
                 });
             }
 
-            req.login(user, { session: false }, (err) => {
-                if (err) {
-                    res.send(err);
-                }
-                // generate a signed json web token with the contents of user object and return it in the response
-                const token = jwt.sign(user, process.env.JWT_SECRET, { expiresIn: '1h' });
-                return res.json({ token });
-            });
+            // Generar un token web JSON firmado con el contenido del objeto de usuario y devolverlo en la respuesta
+            const token = jwt.sign(user, process.env.JWT_SECRET, { expiresIn: '1h' });
+            return res.json({ token });
         })(req, res);
     };
 

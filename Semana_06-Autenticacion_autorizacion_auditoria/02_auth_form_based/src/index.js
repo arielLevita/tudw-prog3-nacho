@@ -11,6 +11,7 @@ import session from 'express-session';
 import { Strategy as LocalStrategy } from 'passport-local';
 
 //Rutas
+import isAuthenticated from './middlewares/isAuthenticated.js';
 import actorsRouter from './v1/routes/actorsRoutes.js';
 import filmsRouter from './v1/routes/filmsRoutes.js';
 import dashboardRouter from './v1/routes/dashboardRoutes.js';
@@ -46,12 +47,12 @@ app.use(express.static(path.resolve(__dirname, '../public')));
 // CONFIGURACIÓN SESIONES
 //***********
 app.use(express.json());
-app.use(express.urlencoded());
+app.use(express.urlencoded({ extended: false }));
 
 app.use(session({
     secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: true,
+    resave: false, // No guardar la sesión si no ha cambiado
+    saveUninitialized: false, // No guardar la sesión si no se ha inicializado
     //cookie: { secure: "true" } // Para usar en producción
 }));
 
@@ -66,6 +67,7 @@ passport.use(new LocalStrategy({
         service.find(username, password).then(data => {
             if (!data) {
                 cb(null, false, { message: 'Nombre de usuario y/o contraseña incorrectos.' });
+                return;
             }
 
             cb(null, data, { message: 'Login correcto!' });
@@ -82,17 +84,14 @@ passport.serializeUser((user, cb) => {
     cb(null, user.userId);
 });
 
-passport.deserializeUser((userId, cb) => {
+passport.deserializeUser(async (userId, cb) => {
     console.log("deserializeUser");
-    service.findById(userId)
-        .then(user => {
-            if (!user) {
-                cb(new Error("Credenciales inválidas"));
-            }
+    const user = await service.findById(userId);
+    if (!user) {
+        return cb(new Error("Credenciales inválidas"));
+    }
 
-            cb(null, user);
-        })
-        .catch((err) => cb(err));
+    return cb(null, user);
 });
 
 //***********
@@ -106,10 +105,9 @@ app.get('/institucional', (_, res) => res.render('institucional', { title: 'Inst
 
 app.get('/contacto', (_, res) => { res.render('contacto', { title: 'Contacto' }) });
 
-//app.route('/restricted/', isAuthenticated, dashboardRouter);
-app.use('/restricted/', dashboardRouter);
-app.use('/restricted/', actorsRouter);
-app.use('/restricted/', filmsRouter);
+app.use('/restricted/', isAuthenticated, dashboardRouter);
+app.use('/restricted/', isAuthenticated, actorsRouter);
+app.use('/restricted/', isAuthenticated, filmsRouter);
 
 app.post('/login', function (req, res, next) {
     passport.authenticate('local', function (err, user, info) {
@@ -142,11 +140,12 @@ app.get('/login', (_, res) => {
     res.render('login', { title: 'Login' })
 });
 
-app.get('/logout', (req, res) => {
-    req.logout();
-    res.redirect("/");
+app.get('/logout', (req, res, next) => {
+    req.logout((err) => {
+        if (err) { return next(err); }
+        res.redirect("/");
+    });
 });
-
 // Página personalizada de error 404
 app.use((req, res) => {
     console.log(req.url);
@@ -155,7 +154,7 @@ app.use((req, res) => {
 });
 
 // Página personalizada de error 500
-app.use((err, _, res) => {
+app.use((err, req, res, next) => {
     console.error(err.message);
     res.status(500);
     res.render('500');

@@ -24,10 +24,12 @@ passport.use(estrategia);
 
 // Serializar y deserializar el usuario para la sesión
 passport.serializeUser((user, done) => {
+    console.log("serializando user");
     done(null, user);
 });
 
 passport.deserializeUser((user, done) => {
+    console.log("deserializando user");
     done(null, user);
 });
 
